@@ -37,7 +37,9 @@ def makeLines(made_lines):
     return return_lines
 
 # Draws Player UI
-def drawUI(player, lines):
+def drawUI(player, lines, mode):
+
+    lines = makeLines(lines)
 
     def create_exp_bar(exp):
 
@@ -131,19 +133,19 @@ def drawUI(player, lines):
 
     # Print skills for the main lines
     warrior_skills_name_line = (f"{"S.Sword":8} {player.warrior_shortsword_lv:>3} {"L.Sword":8} "
-                           f"{player.warrior_longsword_lv:>3} {"Axe":8} {player.warrior_axe_lv:>3} {"Brute":8} "
-                           f"{player.warrior_brute_lv:>3}")
+                                f"{player.warrior_longsword_lv:>3} {"Axe":8} {player.warrior_axe_lv:>3} {"Brute":8} "
+                                f"{player.warrior_brute_lv:>3}")
     warrior_skills_expbar_line = f"{shortsword} {longsword} {axe} {brute}"
 
     mage_skills_name_line_1 = (f"{"Wands":8} {player.mage_wand_lv:>3} {"Staffs":8} {player.mage_staff_lv:>3} "
-                             f"{"Cards":8} {player.mage_card_lv:>3} {"":8} {"":3}")
+                               f"{"Cards":8} {player.mage_card_lv:>3} {"":8} {"":3}")
     mage_skills_expbar_line_1 = f"{wand} {staff} {card} {"":12}"
     mage_skills_name_line_2 = (f"{"Arcane":8} {player.mage_arcane_lv:>3} {"Buffs":8} {player.mage_buff_lv:>3} "
                                f"{"Debuffs":8} {player.mage_debuff_lv:>3} {"Healing":8} {player.mage_healing_lv:>3}")
     mage_skills_expbar_line_2 = f"{arcane} {buff} {debuff} {healing}"
 
     thief_skills_name_line_1 =(f"{"Daggers":8} {player.thief_dagger_lv:>3} {"Pickup":8} {player.thief_pickup_lv:>3} "
-                             f"{"Steal":8} {player.thief_steal_lv:>3} {"":8} {"":3}")
+                               f"{"Steal":8} {player.thief_steal_lv:>3} {"":8} {"":3}")
     thief_skills_expbar_line_1 = f"{dagger} {pickup} {steal} {"":12}"
     thief_skills_name_line_2 = (f"{"Stealth":8} {player.thief_stealth_lv:>3} {"Accuracy":8} "
                                 f"{player.thief_accuracy_lv:>3} {"Critical":8} {player.thief_critical_lv:>3} "
@@ -151,7 +153,7 @@ def drawUI(player, lines):
     thief_skills_expbar_line_2 = f"{stealth} {accuracy} {critical} {recovery}"
 
     crafting_skills_name = (f"{"Smithing":8} {player.crafting_smithing_lv:3} {"Runic":8} {player.crafting_runic_lv:3} "
-                              f"{"Grab Bag":8} {player.crafting_grabbag_lv:3} {"":12}")
+                            f"{"Grab Bag":8} {player.crafting_grabbag_lv:3} {"":12}")
     crafting_skills_expbar = f"{smithing} {runic} {grabbag} {"":12}"
 
     # Begin UI lines
@@ -159,7 +161,7 @@ def drawUI(player, lines):
     main_focus = 50
 
     # Format Line to break up classes in UI
-    format_line = (f" ║ {{:{main_focus}}} ║ {"═"*13:13} ║ {"═"*51:51} ║")
+    format_line = f" ║ {{:{main_focus}}} ║ {"═"*13:13} ║ {"═"*51:51} ║"
 
     line_start = f"\n ╔═{"═"*int(main_focus)}═╦═{"═"*13}═╦═{"═"*51}═╗"
     line_end = f" ╚═{"═"*int(main_focus)}═╩═{"═"*13}═╩═{"═"*51}═╝"
@@ -167,14 +169,22 @@ def drawUI(player, lines):
     # Warrior Lines
     line_1 = (f" ║ {lines[0]:{main_focus}} ║"
               f" {"Warrior":9} {player.warrior_level:3} ║ {warrior_skills_name_line} ║")
+
+
     line_2 = (f" ║ {lines[1]:{main_focus}} ║"
               f" {player_warrior_class:>13} ║ {warrior_skills_expbar_line} ║")
 
     # Mage Lines
-    line_3 = (f" ║ {lines[3]:{main_focus}} ║"
-              f" {"Mage":9} {player.mage_level:3} ║ {mage_skills_name_line_1} ║")
-    line_4 = (f" ║ {lines[4]:{main_focus}} ║"
-              f" {player_mage_class:>13} ║ {mage_skills_expbar_line_1} ║")
+    if mode == "battle":
+        line_3 = (f" ║ {lines[3]:>{main_focus}} ║"
+                  f" {"Mage":9} {player.mage_level:3} ║ {mage_skills_name_line_1} ║")
+        line_4 = (f" ║ {lines[4]:>{main_focus}} ║"
+                  f" {player_mage_class:>13} ║ {mage_skills_expbar_line_1} ║")
+    else:
+        line_3 = (f" ║ {lines[3]:{main_focus}} ║"
+                  f" {"Mage":9} {player.mage_level:3} ║ {mage_skills_name_line_1} ║")
+        line_4 = (f" ║ {lines[4]:{main_focus}} ║"
+                  f" {player_mage_class:>13} ║ {mage_skills_expbar_line_1} ║")
     line_5 = (f" ║ {lines[5]:{main_focus}} ║"
               f" {"":>13} ║ {mage_skills_name_line_2} ║")
     line_6 = (f" ║ {lines[6]:{main_focus}} ║"
@@ -202,3 +212,17 @@ def drawUI(player, lines):
         line_end]
     for line in print_order:
         print(line)
+
+def draw_hpmptp_bar(max, current, stat_type, isPlayer):
+    # Calculate percent and number of bars needed to draw
+    bars_to_draw = int(((current / max) * 200) / 10)
+    if bars_to_draw <= 0:
+        bars_to_draw = 1
+    bars = "▓" * int(bars_to_draw)
+
+    if isPlayer == True:
+        bar = f"{stat_type}:   {current:3}/{max:3}   [{bars:<20}]  "
+    else:
+        bar = f"[{bars:>20}]"
+
+    return bar
