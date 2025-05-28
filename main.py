@@ -16,7 +16,9 @@ from flavor import flavor_list
 # Main TODO LIST
 # 1 - Create class for player equipment
 #       Type, atk bonus, mag bonus, lck bonus, accuracy, sell price,
-# 2 -
+# 2 - Link to workshop module
+# 3 - Link to training module
+# 4 -
 
 class playerStatsClass():
 
@@ -161,12 +163,7 @@ def main():
             main_lines.append((f" {str(option_number)} - {option}"))
             option_number += 1
 
-
-
-        main_lines = common.makeLines(main_lines)
-        common.drawUI(player, main_lines)
-
-
+        common.drawUI(player, main_lines, "main")
 
         # Flavor text
         flavor_pick = random.randrange(0, len(flavor_list))
@@ -182,7 +179,7 @@ def main():
         # Check if player input is a valid number for the number of options
         if player_options <= len(options):
             if player_options == 1:
-                battle.prepBattleMenu(player)
+                player = battle.prepBattleMenu(player)
             elif player_options == 2:
                 pass
             elif player_options == 3:
