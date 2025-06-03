@@ -17,7 +17,7 @@ def numConversion(number):
 # Inputs options/info/other UI and ensures that 12 lines are available for drawUI()
 def makeLines(made_lines):
     return_lines = []
-    current_ui_lines = 14
+    current_ui_lines = 16
 
     # If lines are less than 12 long
     if len(made_lines) < current_ui_lines:
@@ -103,6 +103,7 @@ def drawUI(player, lines, mode):
     player_crafting_class = create_exp_bar(crafting_class_exp)
 
     # Create the exp bars for warrior skills
+    fist = create_exp_bar(player.warrior_fist_exp)
     shortsword = create_exp_bar(player.warrior_shortsword_exp)
     longsword = create_exp_bar(player.warrior_longsword_exp)
     axe = create_exp_bar(player.warrior_axe_exp)
@@ -132,10 +133,12 @@ def drawUI(player, lines, mode):
     grabbag = create_exp_bar(player.crafting_grabbag_exp)
 
     # Print skills for the main lines
-    warrior_skills_name_line = (f"{"S.Sword":8} {player.warrior_shortsword_lv:>3} {"L.Sword":8} "
-                                f"{player.warrior_longsword_lv:>3} {"Axe":8} {player.warrior_axe_lv:>3} {"Brute":8} "
-                                f"{player.warrior_brute_lv:>3}")
-    warrior_skills_expbar_line = f"{shortsword} {longsword} {axe} {brute}"
+    warrior_skills_name_line_1 = (f"{"Fists":8} {player.warrior_fist_lv:>3} {"S.Sword":8} "
+                                  f"{player.warrior_shortsword_lv:>3} {"L.Sword":8} {player.warrior_longsword_lv:>3} "
+                                  f"{"Axe":8} {player.warrior_axe_lv:>3}")
+    warrior_skills_expbar_line_1 = f"{fist} {shortsword} {longsword} {axe}"
+    warrior_skills_name_line_2 = f"{"Brute":8} {player.warrior_brute_lv:>3} {"":12} {"":12} {"":12}"
+    warrior_skills_expbar_line_2 = f"{brute} {"":12} {"":12} {"":12}"
 
     mage_skills_name_line_1 = (f"{"Wands":8} {player.mage_wand_lv:>3} {"Staffs":8} {player.mage_staff_lv:>3} "
                                f"{"Cards":8} {player.mage_card_lv:>3} {"":8} {"":3}")
@@ -168,48 +171,50 @@ def drawUI(player, lines, mode):
 
     # Warrior Lines
     line_1 = (f" ║ {lines[0]:{main_focus}} ║"
-              f" {"Warrior":9} {player.warrior_level:3} ║ {warrior_skills_name_line} ║")
-
-
+              f" {"Warrior":9} {player.warrior_level:3} ║ {warrior_skills_name_line_1} ║")
     line_2 = (f" ║ {lines[1]:{main_focus}} ║"
-              f" {player_warrior_class:>13} ║ {warrior_skills_expbar_line} ║")
+              f" {player_warrior_class:>13} ║ {warrior_skills_expbar_line_1} ║")
+    line_3 = (f" ║ {lines[2]:{main_focus}} ║"
+              f" {"":>13} ║ {warrior_skills_name_line_2} ║")
+    line_4 = (f" ║ {lines[3]:{main_focus}} ║"
+              f" {"":>13} ║ {warrior_skills_expbar_line_2} ║")
 
     # Mage Lines
     if mode == "battle":
-        line_3 = (f" ║ {lines[3]:>{main_focus}} ║"
+        line_5 = (f" ║ {lines[5]:>{main_focus}} ║"
                   f" {"Mage":9} {player.mage_level:3} ║ {mage_skills_name_line_1} ║")
-        line_4 = (f" ║ {lines[4]:>{main_focus}} ║"
+        line_6 = (f" ║ {lines[6]:>{main_focus}} ║"
                   f" {player_mage_class:>13} ║ {mage_skills_expbar_line_1} ║")
     else:
-        line_3 = (f" ║ {lines[3]:{main_focus}} ║"
+        line_5 = (f" ║ {lines[5]:{main_focus}} ║"
                   f" {"Mage":9} {player.mage_level:3} ║ {mage_skills_name_line_1} ║")
-        line_4 = (f" ║ {lines[4]:{main_focus}} ║"
+        line_6 = (f" ║ {lines[6]:{main_focus}} ║"
                   f" {player_mage_class:>13} ║ {mage_skills_expbar_line_1} ║")
-    line_5 = (f" ║ {lines[5]:{main_focus}} ║"
+    line_7 = (f" ║ {lines[7]:{main_focus}} ║"
               f" {"":>13} ║ {mage_skills_name_line_2} ║")
-    line_6 = (f" ║ {lines[6]:{main_focus}} ║"
+    line_8 = (f" ║ {lines[8]:{main_focus}} ║"
               f" {"":>13} ║ {mage_skills_expbar_line_2} ║")
 
     # Thief Lines
-    line_7 = (f" ║ {lines[8]:{main_focus}} ║"
-              f" {"Thief":9} {player.thief_level:3} ║ {thief_skills_name_line_1} ║")
-    line_8 = (f" ║ {lines[9]:{main_focus}} ║"
-              f" {player_thief_class:>13} ║ {thief_skills_expbar_line_2} ║")
     line_9 = (f" ║ {lines[10]:{main_focus}} ║"
-              f" {"":>13} ║ {thief_skills_name_line_2} ║")
+              f" {"Thief":9} {player.thief_level:3} ║ {thief_skills_name_line_1} ║")
     line_10 = (f" ║ {lines[11]:{main_focus}} ║"
+              f" {player_thief_class:>13} ║ {thief_skills_expbar_line_1} ║")
+    line_11 = (f" ║ {lines[12]:{main_focus}} ║"
+              f" {"":>13} ║ {thief_skills_name_line_2} ║")
+    line_12 = (f" ║ {lines[13]:{main_focus}} ║"
               f" {"":>13} ║ {thief_skills_expbar_line_2} ║")
 
     # Crafting Lines
-    line_11 = (f" ║ {lines[13]:{main_focus}} ║"
+    line_13 = (f" ║ {lines[15]:{main_focus}} ║"
               f" {"Crafting":>9} {player.crafting_level:3} ║ {crafting_skills_name} ║")
-    line_12 = (f" ║ {lines[14]:{main_focus}} ║"
+    line_14 = (f" ║ {lines[16]:{main_focus}} ║"
               f" {player_crafting_class:>13} ║ {crafting_skills_expbar} ║")
 
     # Print UI
-    print_order = [line_start, line_1, line_2, format_line.format(lines[2]), line_3, line_4, line_5, line_6,
-        format_line.format(lines[7]), line_7, line_8, line_9, line_10, format_line.format(lines[12]), line_11, line_12,
-        line_end]
+    print_order = [line_start, line_1, line_2, line_3, line_4, format_line.format(lines[4]), line_5, line_6,
+        line_7, line_8, format_line.format(lines[9]), line_9, line_10, line_11, line_12, format_line.format(lines[14]),
+        line_13, line_14, line_end]
     for line in print_order:
         print(line)
 

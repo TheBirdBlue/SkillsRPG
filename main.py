@@ -7,18 +7,18 @@ import random
 
 sys.path.insert(0, "./modules")
 sys.path.insert(1, "./saves")
+sys.path.insert(2, "./system")
 
 import common
 import saveload
 import battle
+import skills
 from flavor import flavor_list
 
 # Main TODO LIST
-# 1 - Create class for player equipment
-#       Type, atk bonus, mag bonus, lck bonus, accuracy, sell price,
-# 2 - Link to workshop module
-# 3 - Link to training module
-# 4 -
+# 1 - Link to workshop module
+# 2 - Link to training module
+# 3 - Create and link to player save file for current inventory
 
 class playerStatsClass():
 
@@ -34,7 +34,40 @@ class playerStatsClass():
         else:
             return level
 
-    def __init__(self, player_stats, warrior_stats, mage_stats, thief_stats, crafting_stats):
+    def equip_items(self, equipped_list, req_type):
+        # Iterate through equipped and look for item type to be stored
+        for item in equipped_list:
+            if item["TYPE"] in req_type:
+                return_item = {
+                    "NAME": item["NAME"],
+                    "TYPE": item["TYPE"],
+                    "SKILL": item["SKILL"],
+                    "LEVEL": int(item["LEVEL"]),
+                    "ATTACK_PHYSICAL": int(item["ATTACK_PHYSICAL"]),
+                    "ATTACK_MAGICAL": int(item["ATTACK_MAGICAL"]),
+                    "ATTACK_LUCK": int(item["ATTACK_LUCK"]),
+                    "DEFENSE_PHYSICAL": int(item["DEFENSE_PHYSICAL"]),
+                    "DEFENSE_MAGICAL": int(item["DEFENSE_MAGICAL"])
+                }
+            else:
+                pass
+
+            if return_item == None:
+                return_item = {
+                    "NAME": "None",
+                    "TYPE": "None",
+                    "SKILL": "None",
+                    "LEVEL": "None",
+                    "ATTACK_PHYSICAL": 0,
+                    "ATTACK_MAGICAL": 0,
+                    "ATTACK_LUCK": 0,
+                    "DEFENSE_PHYSICAL": 0,
+                    "DEFENSE_MAGICAL": 0
+                }
+
+        return return_item
+
+    def __init__(self, player_stats, warrior_stats, mage_stats, thief_stats, crafting_stats, equipped):
         self.name = player_stats[0]
         self.stat_hp = player_stats[1]
         self.stat_mp = player_stats[2]
@@ -47,17 +80,19 @@ class playerStatsClass():
         self.highest_floor = player_stats[9]
 
         # Warrior Stats
-        # Short Sword, Longsword, Axe, Brute Skill
-        self.warrior_shortsword_exp = warrior_stats[0]
-        self.warrior_longsword_exp = warrior_stats[1]
-        self.warrior_axe_exp = warrior_stats[2]
-        self.warrior_brute_exp = warrior_stats[3]
+        # Fists, Short Swords, Longswords, Axes, Brute Skill
+        self.warrior_fist_exp = warrior_stats[0]
+        self.warrior_shortsword_exp = warrior_stats[1]
+        self.warrior_longsword_exp = warrior_stats[2]
+        self.warrior_axe_exp = warrior_stats[3]
+        self.warrior_brute_exp = warrior_stats[4]
+        self.warrior_fist_lv = self.calculate_level(self.warrior_fist_exp, 0)
         self.warrior_shortsword_lv = self.calculate_level(self.warrior_shortsword_exp, 0)
         self.warrior_longsword_lv = self.calculate_level(self.warrior_longsword_exp, 0)
         self.warrior_axe_lv = self.calculate_level(self.warrior_axe_exp, 0)
         self.warrior_brute_lv = self.calculate_level(self.warrior_brute_exp, 1)
-        warrior_level_total = (self.warrior_shortsword_lv + self.warrior_longsword_lv + self.warrior_axe_lv +
-                               self.warrior_brute_lv - 4)
+        warrior_level_total = (self.warrior_fist_lv + self.warrior_shortsword_lv + self.warrior_longsword_lv +
+                               self.warrior_axe_lv + self.warrior_brute_lv - 5)
         self.warrior_level = self.calculate_level(warrior_level_total, 0)
 
         # Mage Stats
@@ -112,12 +147,88 @@ class playerStatsClass():
         self.crafting_level = self.calculate_level(crafting_level_total, 1)
 
         # Player bonus stats and overall level
+        # Player level bonuses
         player_level_total = (warrior_level_total + mage_level_total + thief_level_total + self.warrior_level +
                               self.mage_level + self.thief_level)
         self.stat_level = self.calculate_level(player_level_total, 1)
+
+        # Player class level bonuses
         self.bonus_strength = self.warrior_level - 1
         self.bonus_magic = self.mage_level - 1
         self.bonus_luck = self.thief_level - 1
+
+        # Player equipment bonuses
+        if equipped == "":
+            self.equipped_weapon = {
+                    "NAME": "Unarmed",
+                    "TYPE": "Fists",
+                    "SKILL": "Fists",
+                    "LEVEL": "0",
+                    "ATTACK_PHYSICAL": 1,
+                    "ATTACK_MAGICAL": 0,
+                    "ATTACK_LUCK": 0,
+                    "DEFENSE_PHYSICAL": 0,
+                    "DEFENSE_MAGICAL": 0
+                }
+
+            self.equipped_armor_helm = {}
+            self.equipped_armor_body = {}
+            self.equipped_accessory = {}
+            self.bonus_strength_equipment = 1
+            self.bonus_magic_equipment = 0
+            self.bonus_luck_equipment = 0
+            self.armor_physical = 0
+            self.armor_magical = 0
+            self.skill_bonus = ""
+
+        else:
+            weapon_req = ["S.Sword", "L.Sword", "Axe", "Wands", "Staffs", "Cards", "Daggers"]
+            accessory_req = ["Necklace", "Ring", "Skill Gem"]
+            self.equipped_weapon = self.equip_items(equipped, weapon_req)
+
+            # Check if player has nothing equipped in weapon and sets them to unarmed if nothing equipped
+            if self.equipped_weapon["Name"] == "None":
+                self.equipped_weapon = {
+                    "NAME": "Unarmed",
+                    "TYPE": "Fists",
+                    "SKILL": "Fists",
+                    "LEVEL": "0",
+                    "ATTACK_PHYSICAL": 1,
+                    "ATTACK_MAGICAL": 0,
+                    "ATTACK_LUCK": 0,
+                    "DEFENSE_PHYSICAL": 0,
+                    "DEFENSE_MAGICAL": 0
+                }
+            else:
+                pass
+
+            self.equipped_armor_helm = self.equip_items(equipped, "Helm")
+            self.equipped_armor_body = self.equip_items(equipped, "Body")
+            self.equipped_accessory = self.equip_items(equipped, accessory_req)
+            self.bonus_strength_equipment = (self.equipped_weapon["ATTACK_PHYSICAL"] +
+                                             self.equipped_armor_helm["ATTACK_PHYSICAL"] +
+                                             self.equipped_armor_body["ATTACK_PHYSICAL"] +
+                                             self.equipped_accessory["ATTACK_PHYSICAL"])
+            self.bonus_magic_equipment = (self.equipped_weapon["ATTACK_MAGICAL"] +
+                                             self.equipped_armor_helm["ATTACK_MAGICAL"] +
+                                             self.equipped_armor_body["ATTACK_MAGICAL"] +
+                                             self.equipped_accessory["ATTACK_MAGICAL"])
+            self.bonus_luck_equipment = (self.equipped_weapon["ATTACK_LUCK"] +
+                                             self.equipped_armor_helm["ATTACK_LUCK"] +
+                                             self.equipped_armor_body["ATTACK_LUCK"] +
+                                             self.equipped_accessory["ATTACK_LUCK"])
+            self.armor_physical = (self.equipped_weapon["DEFENSE_PHYSICAL"] +
+                                             self.equipped_armor_helm["DEFENSE_PHYSICAL"] +
+                                             self.equipped_armor_body["DEFENSE_PHYSICAL"] +
+                                             self.equipped_accessory["DEFENSE_PHYSICAL"])
+            self.armor_magical = (self.equipped_weapon["DEFENSE_MAGICAL"] +
+                                             self.equipped_armor_helm["DEFENSE_MAGICAL"] +
+                                             self.equipped_armor_body["DEFENSE_MAGICAL"] +
+                                             self.equipped_accessory["DEFENSE_MAGICAL"])
+            self.skill_bonus = self.equipped_accessory["SKILL"]
+
+        # Pull player skills
+        self.skills = skills.loadSkills(self.warrior_level, self.mage_level, self.thief_level, self.crafting_level)
 
 def main():
     # Set save file list
@@ -137,13 +248,15 @@ def main():
 
     # If save exists
     if player_input in load_names:
-        stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting = saveload.loadPlayer(player_input)
-        player = playerStatsClass(stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting)
+        (stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting, equipment)\
+            = saveload.loadPlayer(player_input)
+        player = playerStatsClass(stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting, equipment)
 
     # If save is new
     else:
-        stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting = saveload.createPlayer(player_input)
-        player = playerStatsClass(stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting)
+        (stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting, equipment)\
+            = saveload.createPlayer(player_input)
+        player = playerStatsClass(stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting, "")
 
     run_game = True
 
@@ -151,9 +264,10 @@ def main():
         common.clear()
         main_lines = [player.name,
                       f"Level: {player.stat_level:2} ║ HP: {player.stat_hp} MP: {player.stat_mp} TP: {player.stat_tp}",
-                      f"Str: {player.stat_strength:>3} ({player.bonus_strength:>3})",
-                      f"Mag: {player.stat_magic:>3} ({player.bonus_magic:>3})",
-                      f"Lck: {player.stat_luck:>3} ({player.bonus_luck:>3})",
+                      f"Str: {player.stat_strength:>3} ({player.bonus_strength:>3})  "
+                      f"Eq:({player.bonus_strength_equipment:>3})",
+                      f"Mag: {player.stat_magic:>3} ({player.bonus_magic:>3})  Eq:({player.bonus_magic_equipment:>3})",
+                      f"Lck: {player.stat_luck:>3} ({player.bonus_luck:>3})  Eq:({player.bonus_luck_equipment:>3})",
                       "", f"Highest Floor: {player.highest_floor}", ""]
 
         # Set up options and print them to the player
