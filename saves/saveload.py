@@ -1,11 +1,13 @@
 import os
 
+
 # Writes to file
 def write_file(name, load_tuple, file_name):
     file = './saves/' + name + "/" + name + "_" + file_name
     with open(file, 'w') as save:
         for spot in load_tuple:
             save.write(str(spot) + '\n')
+
 
 # Create player save based on player name input
 def createPlayer(name):
@@ -78,6 +80,7 @@ def createPlayer(name):
 
     return player_create_order, warrior_create_order, mage_create_order, thief_create_order, crafting_create_order, ""
 
+
 def loadPlayer(name):
     player_load_order = []
     warrior_load_order = []
@@ -105,7 +108,8 @@ def loadPlayer(name):
                     line = line.replace("\n", "")
                     job.append(line)
 
-    return player_load_order, warrior_load_order, mage_load_order, thief_load_order, crafting_load_order, "" # Equipment
+    return player_load_order, warrior_load_order, mage_load_order, thief_load_order, crafting_load_order, ""  # Equip
+
 
 def savePlayer(name, save_lists):
     file_names = ["playerSave.txt", "warriorSave.txt", "mageSave.txt", "thiefSave.txt", "craftingSave.txt"]

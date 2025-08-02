@@ -39,6 +39,19 @@ class enemyStatsClass():
             variant = random.randrange(low, high)
             return variant
 
+        def selectElement():
+            elements = ("Neutral", "Fire", "Water", "Air", "Earth", "Light", "Dark")
+            weighted = (50, 20, 20, 20, 20, 5, 5)
+            elemental_choice = random.choices(elements, weighted)
+            return elemental_choice
+
+        # To be used at a later date. Will affect stat calculation.
+        def selectRarity():
+            rarity = (0.8, 1, 1.2, 1.5, 2, 3, 5, 10, 25)
+            weighted = (100, 150, 100, 70, 50, 20, 10, 5, 3, 1)
+            rarity_multiplier = random.choices(rarity, weighted)
+            return rarity_multiplier
+
         if floor % 10 == 0:
             # Create boss fight, stats
             calc_hp = ((floor * 1.5) * base_1)
@@ -53,6 +66,7 @@ class enemyStatsClass():
             self.stat_attack = int(variantStat(self, calc_attack) + calc_attack)
             self.stat_magic = int(variantStat(self, calc_magic) + calc_magic)
             self.stat_luck = int(variantStat(self, calc_luck) + calc_luck)
+            self.element = selectElement()
 
             # Create boss fight, armors
             calc_armor_physical = (floor * 0.2)
@@ -80,6 +94,7 @@ class enemyStatsClass():
             self.stat_attack = int(variantStat(self, calc_attack) + calc_attack)
             self.stat_magic = int(variantStat(self, calc_magic) + calc_magic)
             self.stat_luck = int(variantStat(self, calc_luck) + calc_luck)
+            self.element = selectElement()
 
             # Create boss fight, armors
             calc_armor_physical = (floor * 0.1)
@@ -188,6 +203,14 @@ def generateEnemy(floor):
     enemy = enemyStatsClass(floor)
     return enemy
 
+def queueAction(input):
+    # Cleans up player input if choosing skill or item and returns index of item or skill
+    new_input = input.replace(" ", "")
+    choice_queue = new_input[1:]
+    choice_queue = int(choice_queue) - 1
+
+    return choice_queue
+
 def towerBattle(player, floor):
     # Generate enemy for the floor
     enemy = generateEnemy(floor)
@@ -207,7 +230,81 @@ def towerBattle(player, floor):
         player_tp_bar = common.draw_hpmptp_bar(player.stat_tp, player_current_tp, "TP", True)
         enemy_hp_bar = common.draw_hpmptp_bar(enemy.stat_hp, enemy_current_hp, "HP", False)
 
-        tower_battle_lines = ["", "", "", "Enemy Name", enemy_hp_bar, "", "", player.name, player_hp_bar, player_mp_bar,
+        tower_battle_lines = ["", "", "", "", "", "Enemy Name", enemy_hp_bar, "", "", player.name, player_hp_bar, player_mp_bar,
                               player_tp_bar]
         common.drawUI(player, tower_battle_lines, "battle")
+
+        # Print player action options
+        choice_index = 1
+
+        # Sets up to iterate through lines and display options to player
+        player_battle_actions = (f"Attack   Weapon: {player.equipped_weapon["NAME"]}", "Skills", "Items", "Recover")
+        for action in player_battle_actions:
+            if choice_index == 2:
+                print(f"     {choice_index} - {action}")
+                # Print player skills
+                skill_index = 1
+                for skill in player.skills:
+
+                    # Checks skills for HP/MP/TP costs to be reduced from player numbers
+                    skill_cost = []
+                    if player.skills[skill]["HP_COST"] > 0:
+                        hp_cost = f"HP: {player.skills[skill]["HP_COST"]} "
+                    else:
+                        hp_cost = ""
+                    if player.skills[skill]["MP_COST"] > 0:
+                        mp_cost = f"MP: {player.skills[skill]["MP_COST"]} "
+                    else:
+                        mp_cost = ""
+                    if player.skills[skill]["TP_COST"] > 0:
+                        tp_cost = f"TP: {player.skills[skill]["TP_COST"]} "
+                    else:
+                        tp_cost = ""
+
+                    print(f"           {skill_index}  -  {player.skills[skill]["SKILL_NAME"]:10} "
+                          f"{hp_cost}{mp_cost}{tp_cost}")
+                    skill_index += 1
+
+                choice_index += 1
+
+            else:
+                print(f"     {choice_index} - {action}")
+                choice_index += 1
+
+        # Begin player choice
+        player_action_taken = False
+        print("\n     For skills, please put a space between numbers")
+        player_choice = input("     Choose an action: ")
+
+        #try:
+
+        if len(player_choice) == 1:
+
+            # For attack
+            if player_choice == "1":
+                pass
+
+            # For recover
+            if player_choice == "4":
+                pass
+
+        else:
+            # For skills and items
+            player_choice_process = player_choice[0]
+            if player_choice_process == "2":
+                loaded_skill = player.skills[queueAction(player_choice)]
+                player_action_taken = True
+
+            if player_choice_process == "3":
+                # Items are not curretnly available
+                # loaded_item = queueAction(player_choice)
+                pass
+
+        # Begin enemy turn
+        if player_action_taken == True:
+            pass
+
+        #except:
+            #
+
         input("To pause...")
