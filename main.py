@@ -20,7 +20,8 @@ from flavor import flavor_list
 # 2 - Link to training module
 # 3 - Create and link to player save file for current inventory
 
-class playerStatsClass():
+
+class PlayerStatsClass:
 
     def calculate_level(self, exp, level):
         exp_to_level = level * 10
@@ -52,7 +53,8 @@ class playerStatsClass():
             else:
                 pass
 
-            if return_item == None:
+            # If item is not equipped, set the equipped item as is below;
+            if return_item is None:
                 return_item = {
                     "NAME": "None",
                     "TYPE": "None",
@@ -174,7 +176,7 @@ class playerStatsClass():
             self.equipped_armor_helm = {}
             self.equipped_armor_body = {}
             self.equipped_accessory = {}
-            self.bonus_strength_equipment = 1
+            self.bonus_strength_equipment = self.equipped_weapon["ATTACK_PHYSICAL"]
             self.bonus_magic_equipment = 0
             self.bonus_luck_equipment = 0
             self.armor_physical = 0
@@ -210,25 +212,26 @@ class playerStatsClass():
                                              self.equipped_armor_body["ATTACK_PHYSICAL"] +
                                              self.equipped_accessory["ATTACK_PHYSICAL"])
             self.bonus_magic_equipment = (self.equipped_weapon["ATTACK_MAGICAL"] +
-                                             self.equipped_armor_helm["ATTACK_MAGICAL"] +
-                                             self.equipped_armor_body["ATTACK_MAGICAL"] +
-                                             self.equipped_accessory["ATTACK_MAGICAL"])
+                                          self.equipped_armor_helm["ATTACK_MAGICAL"] +
+                                          self.equipped_armor_body["ATTACK_MAGICAL"] +
+                                          self.equipped_accessory["ATTACK_MAGICAL"])
             self.bonus_luck_equipment = (self.equipped_weapon["ATTACK_LUCK"] +
-                                             self.equipped_armor_helm["ATTACK_LUCK"] +
-                                             self.equipped_armor_body["ATTACK_LUCK"] +
-                                             self.equipped_accessory["ATTACK_LUCK"])
+                                         self.equipped_armor_helm["ATTACK_LUCK"] +
+                                         self.equipped_armor_body["ATTACK_LUCK"] +
+                                         self.equipped_accessory["ATTACK_LUCK"])
             self.armor_physical = (self.equipped_weapon["DEFENSE_PHYSICAL"] +
-                                             self.equipped_armor_helm["DEFENSE_PHYSICAL"] +
-                                             self.equipped_armor_body["DEFENSE_PHYSICAL"] +
-                                             self.equipped_accessory["DEFENSE_PHYSICAL"])
+                                   self.equipped_armor_helm["DEFENSE_PHYSICAL"] +
+                                   self.equipped_armor_body["DEFENSE_PHYSICAL"] +
+                                   self.equipped_accessory["DEFENSE_PHYSICAL"])
             self.armor_magical = (self.equipped_weapon["DEFENSE_MAGICAL"] +
-                                             self.equipped_armor_helm["DEFENSE_MAGICAL"] +
-                                             self.equipped_armor_body["DEFENSE_MAGICAL"] +
-                                             self.equipped_accessory["DEFENSE_MAGICAL"])
+                                  self.equipped_armor_helm["DEFENSE_MAGICAL"] +
+                                  self.equipped_armor_body["DEFENSE_MAGICAL"] +
+                                  self.equipped_accessory["DEFENSE_MAGICAL"])
             self.skill_bonus = self.equipped_accessory["SKILL"]
 
         # Pull player skills
         self.skills = skills.loadSkills(self.warrior_level, self.mage_level, self.thief_level, self.crafting_level)
+
 
 def main():
     # Set save file list
@@ -240,9 +243,8 @@ def main():
         else:
             load_names.append(name)
 
-    position = 1
     for name in load_names:
-        print(f"    {str(position)} - {name}")
+        print(f"     ∟ {name}")
 
     player_input = input(" Select save: ")
 
@@ -250,13 +252,13 @@ def main():
     if player_input in load_names:
         (stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting, equipment)\
             = saveload.loadPlayer(player_input)
-        player = playerStatsClass(stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting, equipment)
+        player = PlayerStatsClass(stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting, equipment)
 
     # If save is new
     else:
         (stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting, equipment)\
             = saveload.createPlayer(player_input)
-        player = playerStatsClass(stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting, "")
+        player = PlayerStatsClass(stats_player, stats_warrior, stats_mage, stats_thief, stats_crafting, "")
 
     run_game = True
 
@@ -274,7 +276,7 @@ def main():
         options = ["To The Tower!", "To The Workshop", "To The Training Grounds", "Rest Yourself (Quit Game)"]
         option_number = 1
         for option in options:
-            main_lines.append((f" {str(option_number)} - {option}"))
+            main_lines.append(f" {str(option_number)} - {option}")
             option_number += 1
 
         common.drawUI(player, main_lines, "main")
@@ -287,7 +289,7 @@ def main():
         player_options_input = input("\n     What would you like to do? ")
 
         # Check if player input was a number
-        #try:
+        # try:
         player_options = int(player_options_input)
 
         # Check if player input is a valid number for the number of options
@@ -328,8 +330,8 @@ def main():
         else:
             print(" That's not a choice. Please select again.")
             time.sleep(2)
-        #except:
-            #print(" That's not a choice. Please select again.")
-            #time.sleep(2)
+        # except:
+            # print(" That's not a choice. Please select again.")
+            # time.sleep(2)
 
 main()

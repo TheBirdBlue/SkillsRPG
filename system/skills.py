@@ -29,12 +29,15 @@ def loadSkills(lv_warrior, lv_mage, lv_thief, lv_crafting):
                         # Index range is 0 to 5
                         skill_dict[skill_index] = {}
                         skill_dict[skill_index]["SKILL_NAME"] = split_line[1]
-                        skill_dict[skill_index]["POWER"] = split_line[2]
-                        skill_dict[skill_index]["ELEMENT"] = split_line[3]
-                        skill_dict[skill_index]["SKILL"] = split_line[4]
+                        skill_dict[skill_index]["POWER"] = int(split_line[2])
+                        skill_dict[skill_index]["HP_COST"] = int(split_line[3])
+                        skill_dict[skill_index]["MP_COST"] = int(split_line[4])
+                        skill_dict[skill_index]["TP_COST"] = int(split_line[5])
+                        skill_dict[skill_index]["ELEMENT"] = split_line[6]
+                        skill_dict[skill_index]["SKILL"] = split_line[7]
                         # Remove /n from end of line
-                        split_line[5] = split_line[5].replace("\n", "")
-                        skill_dict[skill_index]["KEYS"] = split_line[5]
+                        split_line[8] = split_line[8].replace("\n", "")
+                        skill_dict[skill_index]["KEYS"] = split_line[8]
                         skill_index += 1
 
                     else:

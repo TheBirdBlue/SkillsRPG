@@ -1,2 +1,2 @@
-## LV,SKILL_NAME,POWER,ELEMENT,KEYS
-2,Ransack,1,NONE,Steal,willstealcoinsinthefuture
+## LV,SKILL_NAME,POWER,ELEMENT,HP_COST,MP_COST,TP_COST,SKILL,KEYS
+2,Ransack,1,0,0,3,NONE,Steal,will attain general exp equal to damage dealt
